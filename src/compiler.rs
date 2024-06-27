@@ -40,6 +40,7 @@ impl Compiler {
             name,
             optional,
             relative,
+            comment: _,
           } => {
             if !unstable {
               return Err(Error::Unstable {
@@ -107,7 +108,7 @@ impl Compiler {
       asts.insert(current.path, ast.clone());
     }
 
-    let justfile = Analyzer::analyze(&loaded, &paths, &asts, root, None)?;
+    let justfile = Analyzer::analyze(&loaded, &paths, &asts, root, None, None)?;
 
     Ok(Compilation {
       asts,

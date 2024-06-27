@@ -371,6 +371,8 @@ impl<'run, 'src> Parser<'run, 'src> {
               || self.next_are(&[Identifier, Identifier, Eol])
               || self.next_are(&[Identifier, QuestionMark]) =>
           {
+            let comment = pop_doc_comment(&mut items, eol_since_last_comment);
+
             self.presume_keyword(Keyword::Mod)?;
 
             let optional = self.accepted(QuestionMark)?;
@@ -389,6 +391,7 @@ impl<'run, 'src> Parser<'run, 'src> {
               name,
               optional,
               relative,
+              comment,
             });
           }
           Some(Keyword::Set)
