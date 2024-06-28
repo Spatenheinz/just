@@ -31,12 +31,13 @@ pub(crate) use {
     evaluator::Evaluator, execution_context::ExecutionContext, expression::Expression,
     fragment::Fragment, function::Function, interrupt_guard::InterruptGuard,
     interrupt_handler::InterruptHandler, item::Item, justfile::Justfile, keyed::Keyed,
-    keyword::Keyword, lexer::Lexer, line::Line, list::List, load_dotenv::load_dotenv,
-    loader::Loader, module_path::ModulePath, name::Name, namepath::Namepath, ordinal::Ordinal,
-    output::output, output_error::OutputError, parameter::Parameter, parameter_kind::ParameterKind,
-    parser::Parser, platform::Platform, platform_interface::PlatformInterface, position::Position,
-    positional::Positional, ran::Ran, range_ext::RangeExt, recipe::Recipe,
-    recipe_resolver::RecipeResolver, recipe_signature::RecipeSignature, scope::Scope,
+    keyword::Keyword, lexer::Lexer, line::Line, list::List, list_entry::ListEntry,
+    load_dotenv::load_dotenv, loader::Loader, module_path::ModulePath, name::Name,
+    namepath::Namepath, ordinal::Ordinal, output::output, output_error::OutputError,
+    parameter::Parameter, parameter_kind::ParameterKind, parser::Parser, platform::Platform,
+    platform_interface::PlatformInterface, position::Position, positional::Positional, ran::Ran,
+    range_ext::RangeExt, recipe::Recipe, recipe_resolver::RecipeResolver,
+    recipe_signature::RecipeSignature, recipe_signature::SignatureWidths, scope::Scope,
     search::Search, search_config::SearchConfig, search_error::SearchError, set::Set,
     setting::Setting, settings::Settings, shebang::Shebang, shell::Shell,
     show_whitespace::ShowWhitespace, source::Source, string_kind::StringKind,
@@ -159,6 +160,7 @@ mod keyword;
 mod lexer;
 mod line;
 mod list;
+mod list_entry;
 mod load_dotenv;
 mod loader;
 mod module_path;

@@ -219,7 +219,7 @@ fn list_invalid_path() {
 fn list_unknown_submodule() {
   Test::new()
     .args(["--unstable", "--list", "hello"])
-    .stderr("error: Justfile does not contain submodule `hello`\n")
+    .stderr("error: Justfile does not contain submodule nor group `hello`\n")
     .status(1)
     .run();
 }
@@ -388,6 +388,10 @@ fn module_doc_aligned() {
         # comment
         mod very_long_name_for_module \"bar.just\" # comment
 
+        # another lifechanging experience
+        recipe2:
+            @echo fooled
+
         # will change your world
         recipe:
             @echo Hi
@@ -399,8 +403,155 @@ fn module_doc_aligned() {
       "
         Available recipes:
             recipe                        # will change your world
+            recipe2                       # another lifechanging experience
             foo ...                       # Module foo
             very_long_name_for_module ... # comment
+      ",
+    )
+    .run();
+}
+
+#[test]
+fn group_list() {
+  Test::new()
+    .justfile(
+      "
+        [group('group_name')]
+        recipe:
+            @echo Hi
+
+        recipe2:
+            @echo Hi
+      ",
+    )
+    .test_round_trip(false)
+    .args(["--unstable", "--list", "group_name"])
+    .stdout(
+      "
+        Available recipes:
+            recipe
+      ",
+    )
+    .run();
+}
+
+#[test]
+fn group_list_recursive() {
+  Test::new()
+    .write(
+      "foo.just",
+      "
+[group('group_name')]
+rec_recipe:
+    @echo recursion fun
+      ",
+    )
+    .justfile(
+      "
+        mod foo
+
+        [group('group_name')]
+        recipe:
+            @echo Hi
+
+        recipe2:
+            @echo Hi
+      ",
+    )
+    .test_round_trip(false)
+    .args(["--unstable", "--list-submodules", "--list", "group_name"])
+    .stdout(
+      "
+        Available recipes:
+            recipe
+            foo::rec_recipe
+      ",
+    )
+    .run();
+}
+
+#[test]
+fn group_list_recursive_with_comments() {
+  Test::new()
+    .write(
+      "foo.just",
+      "
+# this is a module comment
+[group('group_name')]
+rec_recipe:
+    @echo recursion fun
+      ",
+    )
+    .justfile(
+      "
+        mod foo
+
+        # comment
+        [group('group_name')]
+        recipe:
+            @echo Hi
+
+        recipe2:
+            @echo Hi
+      ",
+    )
+    .test_round_trip(false)
+    .args(["--unstable", "--list-submodules", "--list", "group_name"])
+    .stdout(
+      "
+        Available recipes:
+            recipe          # comment
+            foo::rec_recipe # this is a module comment
+      ",
+    )
+    .run();
+}
+#[test]
+fn group_list_recursive_nested() {
+  Test::new()
+    .write(
+      "bar.just",
+      "
+# this is a module comment
+[group('group_name')]
+rec_recipe:
+    @echo recursion fun
+
+mod baz
+      ",
+    )
+    .write(
+      "foo.just",
+      "
+mod bar
+      ",
+    )
+    .write(
+      "baz.just",
+      "
+[group('group_name')]
+other:
+    @echo recursion fun
+     ",
+    )
+    .justfile(
+      "
+        mod foo
+
+        # comment
+        [group('group_name')]
+        recipe:
+            @echo Hi
+      ",
+    )
+    .test_round_trip(false)
+    .args(["--unstable", "--list-submodules", "--list", "group_name"])
+    .stdout(
+      "
+        Available recipes:
+            recipe               # comment
+            foo::bar::rec_recipe # this is a module comment
+            foo::bar::baz::other
       ",
     )
     .run();
