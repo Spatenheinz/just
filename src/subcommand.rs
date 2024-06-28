@@ -515,12 +515,12 @@ impl Subcommand {
       ordered.insert(0, None);
     }
 
+    let no_groups = groups.contains_key(&None) && groups.len() == 1;
+
     for (i, group) in ordered.into_iter().enumerate() {
       if i > 0 {
         println!();
       }
-
-      let no_groups = groups.contains_key(&None) && groups.len() == 1;
 
       if !no_groups {
         print!("{list_prefix}");
@@ -581,6 +581,12 @@ impl Subcommand {
         Self::list_module(config, submodule, depth + 1);
       }
     } else {
+      if !module.modules.is_empty() {
+        println!();
+      }
+      if !no_groups {
+        println!("{list_prefix}(modules)");
+      }
       for submodule in module.modules(config) {
         print!("{list_prefix}{} ...", submodule.name(),);
         Self::format_doc(

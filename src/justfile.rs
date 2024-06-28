@@ -404,6 +404,23 @@ impl<'src> Justfile<'src> {
 
     groups.into_iter().map(|(_, _, group)| group).collect()
   }
+
+  pub(crate) fn public_group_table(&self, config: &Config) -> Table<&'src str, HashSet<Name<'src str>>> {
+    let mut table = BTreeMap::new();
+
+    for recipe in self.recipes.values() {
+      if recipe.is_public() {
+        for group in recipe.groups() {
+          table
+            .entry(group)
+            .or_insert_with(HashSet::new)
+            .insert(self.name);
+        }
+      }
+    }
+
+    table
+  }
 }
 
 impl<'src> ColorDisplay for Justfile<'src> {

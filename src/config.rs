@@ -97,6 +97,7 @@ mod arg {
   pub(crate) const NO_DOTENV: &str = "NO-DOTENV";
   pub(crate) const NO_HIGHLIGHT: &str = "NO-HIGHLIGHT";
   pub(crate) const QUIET: &str = "QUIET";
+  pub(crate) const RECURSIVE: &str = "RECURSIVE";
   pub(crate) const SET: &str = "SET";
   pub(crate) const SHELL: &str = "SHELL";
   pub(crate) const SHELL_ARG: &str = "SHELL-ARG";
@@ -276,9 +277,8 @@ impl Config {
         Arg::new(arg::LIST_SUBMODULES)
           .long("list-submodules")
           .env("JUST_LIST_SUBMODULES")
-          .help("List recipes in submodules")
           .action(ArgAction::SetTrue)
-          .env("JUST_LIST_SUBMODULES"),
+          .help("List recipes in submodules"),
       )
       .arg(
         Arg::new(arg::NO_ALIASES)
@@ -318,6 +318,13 @@ impl Config {
           .action(ArgAction::SetTrue)
           .help("Suppress all output")
           .conflicts_with(arg::DRY_RUN),
+      )
+      .arg(
+        Arg::new(arg::RECURSIVE)
+          .long("recursive")
+          .env("JUST_RECURSIVE")
+          .action(ArgAction::SetTrue)
+          .help("Recursively list recipes in submodules"),
       )
       .arg(
         Arg::new(arg::SET)
@@ -762,7 +769,7 @@ impl Config {
       list_prefix: matches
         .get_one::<String>(arg::LIST_PREFIX)
         .map_or_else(|| "    ".into(), Into::into),
-      list_submodules: matches.get_flag(arg::LIST_SUBMODULES),
+      list_submodules: matches.get_flag(arg::LIST_SUBMODULES) || matches.get_flag(arg::RECURSIVE),
       load_dotenv: !matches.get_flag(arg::NO_DOTENV),
       no_aliases: matches.get_flag(arg::NO_ALIASES),
       no_dependencies: matches.get_flag(arg::NO_DEPS),
